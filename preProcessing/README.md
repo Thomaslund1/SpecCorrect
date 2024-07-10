@@ -23,6 +23,4 @@ to open an output file:
 ----
 >import h5py as hpy
 
->file = hpy.File("{path}","{r/w/a/x/etc}")
-
->data = file['dat'][:]
+>data = hpy.File("{path}","{r/w/a/x/etc}")['dat'][:]
