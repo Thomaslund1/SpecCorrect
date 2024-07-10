@@ -1,1 +1,1 @@
-SpecCorrect is a program aimed at consolidating the process of anaylzing instrument drift in both the NEID and HPF spectrographs. 
+SpecCorrect is a program aimed at optimizing the process of analyzing instrument drift in both the NEID and HPF spectrographs. 
