@@ -4,3 +4,7 @@ SpecCorrect is a program aimed at optimizing the process of analyzing instrument
 
 
 
+## Config File 
+
+
+
