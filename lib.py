@@ -22,7 +22,7 @@ def interpolate(wls):
     return wls
 
 """Index Binning"""
-#for the function to work, data_loc must be the friectoty where the consolidated 
+#for the function to work, data_loc must be the directory where the consolidated data is stored.
 def group_by_num(num, data_loc, ref, wl, pix, order_indices):    
     
     cenM_ar = np.array(hpy.File(data_loc + 'All_centroidWl.hdf5', 'r')['dat'][:]) # points at specific location 
