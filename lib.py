@@ -7,6 +7,7 @@ import sys
 import matplotlib.dates as mdates
 import pandas as pd
 
+# function for masking out the nan values from the data set.
 def interpolate(wls):
     mask = np.isnan(wls)
 
@@ -22,7 +23,8 @@ def interpolate(wls):
     return wls
 
 """Index Binning"""
-#for the function to work, data_loc must be the directory where the consolidated data is stored.
+#for the function to work, data_loc must be the directory where the consolidated data is stored. For the arguments wl, pix, and order_indices 
+#enter 1 if you want those lists returned. 
 def group_by_num(num, data_loc, ref, wl, pix, order_indices):    
     
     cenM_ar = np.array(hpy.File(data_loc + 'All_centroidWl.hdf5', 'r')['dat'][:]) # points at specific location 
@@ -110,16 +112,19 @@ def groupByOrder(orders, wls, bins):
     
     return listOfBins
 
-"""Velocity Function"""
+"""Velocity Functions"""
 def wl2vel(wls):
     reference_row = wls[0].copy()
     return(((wls-reference_row)/reference_row)*299792458)
 
+#calculates velocities from a selected order with the specified number of bins. 
 def getVels(wavelengths,orders,bins):
     waves = wl2vel(wavelengths)
     print(waves)
     return groupByOrder(orders,waves,bins)
 
+
+#given vels (or any data of your choice), this function filters through the velocities based on provided indices ranges. A reference file is also required as it is the file from which the velocities will be pulled from. 
 def filter_vels(data, indices, ref):
     out = []
     data1 = np.array(data,dtype = np.float64)
