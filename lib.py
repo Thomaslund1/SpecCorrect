@@ -88,9 +88,7 @@ def groupByOrder(orders, wls, bins):
     eq_rad_velocities = wl2vel(wls)
     listOfBins = []
     
-    print(abs(int(orders[0][0]) - int(orders[0][-1])) - 1)
-    print(int(orders[0][0]))
-    print(int(orders[0][-1]))
+
     for q in range(abs(int(orders[0][0]) - int(orders[0][-1])) - 1):
         print(f"Processing order {int(q+1)}/{(abs(int(orders[0][0]) - int(orders[0][-1])) - 1)}", end="\r")
         order_number = q + orders[0][0] + 1
@@ -120,7 +118,6 @@ def wl2vel(wls):
 #calculates velocities from a selected order with the specified number of bins. 
 def getVels(wavelengths,orders,bins):
     waves = wl2vel(wavelengths)
-    print(waves)
     return groupByOrder(orders,waves,bins)
 
 
@@ -129,9 +126,6 @@ def filter_vels(data, indices, ref):
     out = []
     data1 = np.array(data,dtype = np.float64)
     indices = np.array(indices,dtype = "int")
-    print(data1.shape)
-    print(indices.shape)
-    print(data1)
     for i in range(len(indices)):
         out.append(data1[ref][indices[i]])
     return out
