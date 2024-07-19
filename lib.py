@@ -62,7 +62,7 @@ def order_index_selector (orders, indices, order, index, ref):
 
 """Index Binning"""
 def group_by_numind(num, data_loc, ref):    
-            """
+    """
     Bins indices by the specified integer value for the argument num 
     @param num : int
         number of entries per bin
@@ -74,15 +74,15 @@ def group_by_numind(num, data_loc, ref):
     @returns list_ind
         Returns a list of lists where indices are binned by the specified integer value in the num argument 
     """
-#checking if the user passed a filepath into the function or a specific array 
+    #checking if the user passed a filepath into the function or a specific array 
     if type(data_loc) == str:
         indices = np.array(hpy.File(data_loc + 'All_index.hdf5', 'r')['dat'][:]) # points at specific indices
     else:
             indices = data_loc
-#creating a list of lists where the indices will be binned by the amount specified 
+    #creating a list of lists where the indices will be binned by the amount specified 
     list_ind = [] 
 
-#the variable sub_list index is where the indices will be binned. list_ind is a list where all the specific bins of indices are stored
+    #the variable sub_list index is where the indices will be binned. list_ind is a list where all the specific bins of indices are stored
     for i in range(len(indices[ref])):
         if i%num == 0 and i != 0:
             sublist_ind = [] 
@@ -93,7 +93,7 @@ def group_by_numind(num, data_loc, ref):
     return list_ind
 
 def group_by_numwl(num, data_loc, ref): 
-        """
+    """
     Bins wavelengths by the specified integer value for the argument num 
     @param num : int
         number of entries per bin
@@ -145,7 +145,7 @@ def group_by_numpix(num, data_loc, ref):
     list_pix = [] 
     
 #the variable sublist_pix is where the pixels will be binned. list_pix is a list where all the specific bins of pixels are stored
-    for i in range(len(cenM_ar[ref])):
+    for i in range(len(cenM_pix[ref])):
         if i%num == 0 and i != 0:
             sublist_pix = [] 
             for i in range(i-num, i):
@@ -296,7 +296,7 @@ def getVels(wavelengths,orders,bins,ordVsInd,ref=0,medians=1):
         return groupByOrderMeds(orders,vels,bins)
     else:
         out = []
-        inds = group_by_num(bins, wavelengths, ref, 1)[0]
+        inds = group_by_numind(bins, wavelengths, ref, 1)[0]
         for i in range(len(vels)):
             out.append(filter_vels(vels,inds,i))
         return (out)
