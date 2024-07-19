@@ -114,11 +114,11 @@ def group_by_numwl(num, data_loc, ref):
     list_wavl = [] 
 
 #the variable sublist_wavl is where the wavelengths will be binned. list_wavl is a list where all the specific bins of wavelengths are stored
-    for i in range(len(cenM_ar[ref])):
+    for i in range(len(data_loc[ref])):
         if i%num == 0 and i != 0:
             sublist_wavl = [] 
             for i in range(i-num, i):
-                sublist_wavl.append(np.nanmedian(cenM_ar[i]))
+                sublist_wavl.append(data_loc[ref][i])
             list_wavl.append(sublist_wavl)
 
     return list_wavl
@@ -145,11 +145,11 @@ def group_by_numpix(num, data_loc, ref):
     list_pix = [] 
     
 #the variable sublist_pix is where the pixels will be binned. list_pix is a list where all the specific bins of pixels are stored
-    for i in range(len(cenM_pix[ref])):
+    for i in range(len(data_loc[ref])):
         if i%num == 0 and i != 0:
             sublist_pix = [] 
             for i in range(i-num, i):
-                sublist_pix.append(np.nanmedian(cenM_pix[i]))
+                sublist_pix.append(data_loc[ref][i])
             list_pix.append(sublist_pix)
 
     return list_pix
