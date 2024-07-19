@@ -61,80 +61,98 @@ def order_index_selector (orders, indices, order, index, ref):
     return abs_indices
 
 """Index Binning"""
-def group_by_num(num, data_loc, ref, wl, pix, order_indices, pix_array = None, indices_array = None):        
-        """
-    Groups data by index into sequnetial bins. Returns index values for each bin and if desired lined up wavelength and pixel data. 
+def group_by_numind(num, data_loc, ref):    
+            """
+    Bins indices by the specified integer value for the argument num 
     @param num : int
         number of entries per bin
     @param data_loc : str / array  
         file path for data to chunk. If one wants to insert a specific array instead, put the array name in for data_loc instead.
-        Note: If arrays are used instead of filepath, pix_arrays and indices_arrays must also be filled with the their respective 
-        array names. 
     @param ref : int
-        which measurment to use as the reference date for pulling indexes
-    @param wl : bol 
-        Set to 1 if outputted wavelengths in specific bins is desired. 
-    @param pix : bol
-        Set to 1 if outputted pixels in specific bins is desired.
-    @param order_indecies : bol
-       Set to 1 if outputted indices in specific bins is desired.
-    @param pix_array : array 
-        Default is fot this argument to be ignored. If one wants to use already loaded arrays instead of pointing to a file dircetory 
-        an array of pixel data must be pointed to. 
-    @param indices_array : array 
-        Default is for this argument to be ignored.  If one wants to use already loaded arrays instead of pointing to a file dircetory 
-        an array of indices must be pointed to.
-    @returns list_ind, list_wavl, list_pix, list_ord_ind
-        Lists of the indices/wavleneght/pix/order binned by the desired number. 
+        which measurment to use as the reference date for pulling indices. Sometimes smaller magnitude integers have nan-problems, since 
+        some of the earlier data on the spectrogrpahs can be a bit messy. 
+    @returns list_ind
+        Returns a list of lists where indices are binned by the specified integer value in the num argument 
     """
+#checking if the user passed a filepath into the function or a specific array 
+    if type(data_loc) == str:
+        indices = np.array(hpy.File(data_loc + 'All_index.hdf5', 'r')['dat'][:]) # points at specific indices
+    else:
+            indices = data_loc
+#creating a list of lists where the indices will be binned by the amount specified 
+    list_ind = [] 
 
-        if type(data_loc) == str:
-            cenM_ar = np.array(hpy.File(data_loc + 'All_centroidWl.hdf5', 'r')['dat'][:]) # points at specific location 
-            cenM_pix = np.array(hpy.File(data_loc + 'All_centroidPix.hdf5', 'r')['dat'][:]) # points at specific cenM_pix
-            indices = np.array(hpy.File(data_loc + 'All_index.hdf5', 'r')['dat'][:]) # points at specific indices
-        else:
+#the variable sub_list index is where the indices will be binned. list_ind is a list where all the specific bins of indices are stored
+    for i in range(len(indices[ref])):
+        if i%num == 0 and i != 0:
+            sublist_ind = [] 
+            for i in range(i-num, i):
+                sublist_ind.append(i)
+            list_ind.append(sublist_ind)
+
+    return list_ind
+
+def group_by_numwl(num, data_loc, ref): 
+        """
+    Bins wavelengths by the specified integer value for the argument num 
+    @param num : int
+        number of entries per bin
+    @param data_loc : str / array  
+        file path for data to chunk. If one wants to insert a specific array instead, put the array name in for data_loc instead.
+    @param ref : int
+        which measurment to use as the reference date for pulling wavelengths. Sometimes smaller magnitude integers have nan-problems, since 
+        some of the earlier data on the spectrogrpahs can be a bit messy. 
+    @returns list_wavl
+        Returns a list of lists where wavelengths are binned by the specified integer value in the num argument 
+    """
+#checking if the user passed a filepath into the function or a specific array 
+    if type(data_loc) == str:
+        cenM_ar = np.array(hpy.File(data_loc + 'All_centroidWl.hdf5', 'r')['dat'][:]) # points at specific location 
+    else:
             cenM_ar = data_loc
-            cenM_pix = pix_array
-            indices = indices_array
+#creating a list of lists where the wavlengths will be binned by the amount specified 
+    list_wavl = [] 
 
-        list_ind = [] 
+#the variable sublist_wavl is where the wavelengths will be binned. list_wavl is a list where all the specific bins of wavelengths are stored
+    for i in range(len(cenM_ar[ref])):
+        if i%num == 0 and i != 0:
+            sublist_wavl = [] 
+            for i in range(i-num, i):
+                sublist_wavl.append(np.nanmedian(cenM_ar[i]))
+            list_wavl.append(sublist_wavl)
 
-        for i in range(len(cenM_ar[ref])):
-            if i%num == 0 and i != 0:
-                sublist_ind = [] 
-                for i in range(i-num, i):
-                    sublist_ind.append(i)
-                list_ind.append(sublist_ind)
-        
-        if wl == 1:
-            list_wavl = [] 
-            for i in range(len(cenM_ar[ref])):
-                if i%num == 0 and i != 0:
-                    sublist_wavl = [] 
-                    for i in range(i-num, i):
-                        sublist_wavl.append(cenM_ar[ref][i])
-                    list_wavl.append(sublist_wavl)
+    return list_wavl
 
-        if pix == 1:
-            list_pix = [] 
-            for i in range(len(cenM_ar[ref])):
-                if i%num == 0 and i != 0:
-                    sublist_pix = [] 
-                    for i in range(i-num, i):
-                        sublist_pix.append(cenM_pix[ref][i])
-                    list_pix.append(sublist_pix)
-
-        if order_indices == 1: 
-            list_ord_ind = [] 
-            for i in range(len(indices[ref])):
-                if i%num == 0 and i != 0:
-                    sublist_ordind = [] 
-                    for i in range(i-num, i):
-                        sublist_ordind.append(indices[ref][i])
-                    list_ord_ind.append(sublist_ordind)
+def group_by_numpix(num, data_loc, ref):   
+    """
+    Bins wavelengths by the specified integer value for the argument num 
+    @param num : int
+        number of entries per bin
+    @param data_loc : str / array  
+        file path for data to chunk. If one wants to insert a specific array instead, put the array name in for data_loc instead.
+    @param ref : int
+        which measurment to use as the reference date for pulling wavelengths. Sometimes smaller magnitude integers have nan-problems, since 
+        some of the earlier data on the spectrogrpahs can be a bit messy. 
+    @returns list_wavl
+        Returns a list of lists where wavelengths are binned by the specified integer value in the num argument 
+    """
+#checking if the user passed a filepath into the function or a specific array 
+    if type(data_loc) == str:
+        cenM_pix = np.array(hpy.File(data_loc + 'All_centroidPix.hdf5', 'r')['dat'][:]) # points at specific cenM_pix
+    else:
+            cenM_pix = data_loc
+#creating a list of lists where the pixels will be binned by the amount specified 
+    list_pix = [] 
     
-        return list_ind, list_wavl, list_pix, list_ord_ind
+#the variable sublist_pix is where the pixels will be binned. list_pix is a list where all the specific bins of pixels are stored
+    for i in range(len(cenM_ar[ref])):
+        if i%num == 0 and i != 0:
+            sublist_pix = [] 
+            for i in range(i-num, i):
+                sublist_pix.append(np.nanmedian(cenM_pix[i]))
+            list_pix.append(sublist_pix)
 
+    return list_pix
 
 """order Stuff"""
 def getOrder(orders, num, bins, data):
