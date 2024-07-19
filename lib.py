@@ -36,7 +36,7 @@ def abs2OrdInd(absPos,order,index):
     @param index : list/array
         the list of indexes for the same measurment as the abPos value
     """
-    return([order[absPos],index[absPos])
+    return(order[absPos],index[absPos])
 
 def order_index_selector (orders, indices, order, index, ref):
     """
