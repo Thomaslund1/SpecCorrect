@@ -25,7 +25,7 @@ def process_chunk(chunk_files,keys,outDir,iteration):
     
     # Update HDF5 files for each key
     for key in keys:
-        save_path = str(outDir + "/All_" + key + ".hdf5") 
+        save_path = str(outDir + "/Temp_" + key + ".hdf5") 
         print(save_path)
         try:
             doesExist = hpy.File(save_path, 'a')
@@ -88,20 +88,23 @@ def PS(outDir):
     print("Cleaning up some data, this may take a while...")
     keys = ["order", "index", "centroidPix", "centroidWl", "fwhmPix", "fwhmWls", "snrPeak", "time"]
     for key in keys:
-        save_path = outDir + "/All_" + key + ".hdf5"
+        save_path = outDir + "/Temp_" + key + ".hdf5"
+        correction_path = outDir + "/All_" + key + ".hdf5"
         with hpy.File(save_path, 'r+') as file:
             combined_data = []
             for i in range(len(file.keys())):  # Iterate over all keys
                 dataset_name = str('dat' + str(i))
                 if dataset_name in file:
                     combined_data.append(file[dataset_name][:])
-
+                
             # Concatenate all datasets into a single numpy array
             if combined_data:
                 ar = np.concatenate(combined_data)
 
                 # Create or overwrite the "dat" dataset with the combined data
-                file.create_dataset("dat", data=ar)
+                with hpy.File(save_path, 'w') as finalOut:
+                    finalOut.create_dataset("dat", data=ar)
+                    
 
     print("Done")
     return
