@@ -179,14 +179,14 @@ def groupByOrder(orders, wls, bins):
     """
     listOfBins = []
     
-    for q in range(abs(int(orders[0][0]) - int(orders[0][-1])) - 1):
-        print(f"Processing order {int(q+1)}/{(abs(int(orders[0][0]) - int(orders[0][-1])) - 1)}", end="\r")
-        order_number = q + orders[0][0] + 1
+    for q in range(abs(int(orders[0][0]) - int(orders[0][-1])) - 1): # calculates first minus last order number to know how many orders to process
+        print(f"Processing order {int(q+1)}/{(abs(int(orders[0][0]) - int(orders[0][-1])) - 1)}", end="\r") # prints an estimated progress report based on the above calculation
+        order_number = q + orders[0][0] + 1 # adjusts for order offsets like NEID Etalon starting at order 26
         
         dat = getOrder(orders, order_number, bins, wls)
         newLis = []
         
-        for i in range(len(dat)):
+        for i in range(len(dat)): # reformats the binned measurments and adds them to a constant list
             subl = []
             for j in range(len(dat[i])):
                 subl.append(dat[i][j])
