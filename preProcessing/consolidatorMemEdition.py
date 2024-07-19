@@ -8,7 +8,7 @@ import re
 
 def process_chunk(chunk_files,keys,outDir,iteration):
     """
-    Helper function to process one chunk of files passed by process_files_in_chunks.
+    Process a chunk of files and update HDF5 files with new data for each column.
     """
     num_files = len(chunk_files)
     out_wls = {key: [] for key in keys}  # Dictionary to store results for each key
@@ -85,10 +85,6 @@ def getDate(file):
     return(int(newDateTime))
 
 def PS(outDir):
-    """
-    Post Sript to turn chunks of data into single columns. Optional but useful for data where one optimized collum at a time can fit in memory.
-    If disabled all data will be stored in the Temp_{header}.hdf5 files by group of 100 measurment
-    """
     print("Cleaning up some data, this may take a while...")
     keys = ["order", "index", "centroidPix", "centroidWl", "fwhmPix", "fwhmWls", "snrPeak", "time"]
     for key in keys:
@@ -106,7 +102,7 @@ def PS(outDir):
                 ar = np.concatenate(combined_data)
 
                 # Create or overwrite the "dat" dataset with the combined data
-                with hpy.File(save_path, 'w') as finalOut:
+                with hpy.File(correction_path, 'w') as finalOut:
                     finalOut.create_dataset("dat", data=ar)
                     
 
@@ -134,8 +130,6 @@ def main():
     '''
     allFiles = getFiles(args[0])  # Replace with your list of files
     process_files_in_chunks(allFiles,args[1], chunk_size=100)
-
-    #may be commented out
     PS(args[1])
 
 if (__name__ == "__main__"):
