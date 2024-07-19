@@ -137,24 +137,24 @@ def group_by_num(num, data_loc, ref, wl, pix, order_indices, pix_array = None, i
 
 
 """order Stuff"""
-def getOrder(file, num, bins, dirFile):
+def getOrder(orders, num, bins, data):
     """
     Helper funtion to groupByOrder to chunk one order
-    @param file : array/list
+    @param orders : array/list
         the full list of orders as pulled from the hdf5
     @param num : int
         which order to analyze
     @param bins : int
         how many bins to chop into
-    @param dirFile : 
+    @param data : 
         a data file to split by the index values calculated
     @returns out : np.array
         a 2d array with an entry for each bin that contains all the data chuncked into it
     """
-    mask = (file == num)
+    mask = (orders == num)
     temp = []
-    for i in range(len(dirFile)):
-        temp.append(dirFile[i][mask[i]])
+    for i in range(len(data)):
+        temp.append(data[i][mask[i]])
     filtered_data = np.array(temp) 
     sizeOfBin = filtered_data.shape[1] // bins  # Size of each full bin
     
@@ -166,7 +166,7 @@ def getOrder(file, num, bins, dirFile):
 
 def groupByOrder(orders, data, bins):
     """
-    Proocesses the set of given data by order bins
+    Splits the set of given data into the number of bins asked for according to order. 
     @param orders : list/array
         the list of orders from a hdf5 file
     @param data : list/array
@@ -174,8 +174,9 @@ def groupByOrder(orders, data, bins):
     @param bins : int
         how many bins you want returned
     @returns listOfBins : list
-        the chopped data in the format [(orders),(bins),(measurments by date),(pixel/index)]
-        i.e listOfBins[15,2,5,6] returns the 16th order, 3rd bin, 6th measruement, 7th index value of whatever was passed by data
+        the split data in the format [(orders),(bins),(measurments by date),(pixel/index)]
+        i.e listOfBins[15,2,5,6] returns the 16th order, 3rd bin, 6th measruement, 7th index value of whatever was passed by data. 
+        The final dimension will likely be irregular across bins as there is no padding or cutting in place
     """
     listOfBins = []
     
@@ -200,6 +201,43 @@ def groupByOrder(orders, data, bins):
     
     return listOfBins
 
+def groupByOrderMeds(orders, wls, bins):
+    """
+    Splits the set of given data into the number of bins asked for according to order and takes the median within each bin per measurment. 
+    @param orders : list/array
+        the list of orders from a hdf5 file
+    @param data : list/array
+        the data to chunk as pulled from hdf5 file
+    @param bins : int
+        how many bins you want returned
+    @returns listOfBins : array
+        the split data in the format [(orders),(bins),(median value of that bin per measurment)]
+        i.e listOfBins[15,2,5] returns the 16th order, 3rd bin, 6th measurment's median value of whatever was passed by data. 
+        The final output can now be an array as shape is regular
+    """
+    listOfBins = []
+    
+    for q in range(abs(int(orders[0][0]) - int(orders[0][-1])) - 1):
+        print(f"Processing order {int(q+1)}/{(abs(int(orders[0][0]) - int(orders[0][-1])) - 1)}", end="\r")
+        order_number = q + orders[0][0] + 1
+        
+        dat = getOrder(orders, order_number, bins, wls)
+        newLis = []
+        
+        for i in range(len(dat)):
+            subl = []
+            for j in range(len(dat[i])):
+                subl.append(np.nanmedian(dat[i][j]))
+            newLis.append(subl)
+        newList = np.array(newLis)
+        
+        listOfEras = []
+        for i in range(bins):
+                listOfEras.append(newList[i])
+        listOfBins.append(listOfEras)
+    
+    return np.array(listOfBins)
+
 """Velocity Function"""
 def wl2vel(wls,ref=50):
     """
@@ -217,7 +255,7 @@ def wl2vel(wls,ref=50):
         out.append((np.subtract(wls[i],reference_row)/reference_row)*299792458)
     return(out)
 
-def getVels(wavelengths,orders,bins,ordVsInd):
+def getVels(wavelengths,orders,bins,ordVsInd,ref=0,medians=1):
     """
     repackadged version of both functions to return a binned list of velocities
     @param wavelengths : list/array
@@ -228,14 +266,23 @@ def getVels(wavelengths,orders,bins,ordVsInd):
         how many bins per order if using per order, or how many index values if using by index
     @param ordVsInd : bol
         0 = bin by order | 1 = bin by index
+    @param medians : bol
+        0 = return raw data | 1 = return median of each bin per measurment
     @returns out : list
         the sliced data in terms of velocities 
     """
     vels = wl2vel(wavelengths)
     if(not ordVsInd):
-        return groupByOrder(orders,vels,bins)
+        if(medians):
+            return groupByOrderMeds(orders,vels,bins)
+        return groupByOrderMeds(orders,vels,bins)
     else:
-        return group_by_num(bins, vels, 50, 1)
+        out = []
+        inds = group_by_num(bins, wavelengths, ref, 1)[0]
+        for i in range(len(vels)):
+            out.append(filter_vels(vels,inds,i))
+        return (out)
+        
         
 
 def filter_vels(data, indices, ref):
