@@ -38,9 +38,13 @@ def abs2OrdInd(absPos,order,index):
     """
     return([order[absPos],index[absPos])
 
-def order_index_selector (order, index, ref):
+def order_index_selector (orders, indices, order, index, ref):
     """
     a function which takes in a selected order, index value, and reference file
+    @ param orders : array 
+    takes the desired orders array from a HDF5 file 
+    @param indices : array 
+    takes the desired indices array from a HDF5 file 
     @param order: int 
     takes the desired order number 
     @param index : int 
@@ -51,15 +55,13 @@ def order_index_selector (order, index, ref):
     a list of absolute index values (absolute index being the index within the hdf5 file structure from 0 - 3575 ish).
     """
     abs_indices = [] 
-    for i in range(len(cenM_orders[ref])):
-        if cenM_orders[ref][i] == order and cenM_ind[ref][i] == index:
+    for i in range(len(orders[ref])):
+        if orders[ref][i] == order and indices[ref][i] == index:
             abs_indices.append(i)       
     return abs_indices
 
-
 """Index Binning"""
-def group_by_num(num, data_loc, ref, wl, pix, order_indices, pix_array = None, indices_array = None):    
-    
+def group_by_num(num, data_loc, ref, wl, pix, order_indices, pix_array = None, indices_array = None):        
         """
     Groups data by index into sequnetial bins. Returns index values for each bin and if desired lined up wavelength and pixel data. 
     @param num : int
