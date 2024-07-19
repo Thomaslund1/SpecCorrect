@@ -17,7 +17,7 @@ def interpolate(wls):
     # Find the indices of NaN values
     nan_indices = np.where(mask)
 
-    # Replace NaN values with the previous non-NaN value along each row
+    # Replace NaN values with the median of surrounding 10 points
     for i, j in zip(*nan_indices):
         if j == 0:
             wls[i, j] = 5000
@@ -164,18 +164,18 @@ def getOrder(file, num, bins, dirFile):
     out = np.split(trimmed_data, bins, axis=1)
     return np.array(out)
 
-def groupByOrder(orders, wls, bins):
+def groupByOrder(orders, data, bins):
     """
     Proocesses the set of given data by order bins
     @param orders : list/array
         the list of orders from a hdf5 file
-    @param wls : list/array
+    @param data : list/array
         the data to chunk as pulled from hdf5 file
     @param bins : int
         how many bins you want returned
     @returns listOfBins : list
         the chopped data in the format [(orders),(bins),(measurments by date),(pixel/index)]
-        i.e listOfBins[15,2,5,6] returns the 16th order, 3rd bin, 6th measruement, 7th index value of whatever was passed by wls
+        i.e listOfBins[15,2,5,6] returns the 16th order, 3rd bin, 6th measruement, 7th index value of whatever was passed by data
     """
     listOfBins = []
     
@@ -183,7 +183,7 @@ def groupByOrder(orders, wls, bins):
         print(f"Processing order {int(q+1)}/{(abs(int(orders[0][0]) - int(orders[0][-1])) - 1)}", end="\r") # prints an estimated progress report based on the above calculation
         order_number = q + orders[0][0] + 1 # adjusts for order offsets like NEID Etalon starting at order 26
         
-        dat = getOrder(orders, order_number, bins, wls)
+        dat = getOrder(orders, order_number, bins, data)
         newLis = []
         
         for i in range(len(dat)): # reformats the binned measurments and adds them to a constant list
