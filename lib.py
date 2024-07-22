@@ -219,7 +219,7 @@ def groupByOrder(orders, data, bins):
     
     return listOfBins
 
-def groupByOrderMeds(orders, wls, bins):
+def groupByOrderMeds(orders, data, bins):
     """
     Splits the set of given data into the number of bins asked for according to order and takes the median within each bin per measurment. 
     @param orders : list/array
@@ -239,13 +239,13 @@ def groupByOrderMeds(orders, wls, bins):
         print(f"Processing order {int(q+1)}/{(abs(int(orders[0][0]) - int(orders[0][-1])) - 1)}", end="\r")
         order_number = q + orders[0][0] + 1
         
-        dat = getOrder(orders, order_number, bins, wls)
+        dat = getOrder(orders, order_number, bins, data)
         newLis = []
         
         for i in range(len(dat)):
             subl = []
             for j in range(len(dat[i])):
-                subl.append(np.nanmedian(dat[i][j]))
+                subl.append(np.nanmedian(dat[i][j])) # same function as groupByOrder, but this line reduces a dimensions with medians
             newLis.append(subl)
         newList = np.array(newLis)
         
@@ -284,6 +284,8 @@ def getVels(wavelengths,orders,bins,ordVsInd,ref=0,medians=1):
         how many bins per order if using per order, or how many index values if using by index
     @param ordVsInd : bol
         0 = bin by order | 1 = bin by index
+    @param ref : int
+        what index to use as reference measurment for veloicities 
     @param medians : bol
         0 = return raw data | 1 = return median of each bin per measurment
     @returns out : list
