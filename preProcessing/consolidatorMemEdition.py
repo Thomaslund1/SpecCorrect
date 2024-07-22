@@ -1,9 +1,9 @@
 import numpy as np
 import glob
 from datetime import datetime
-import multiprocessing
 import h5py as hpy
 import sys
+import os
 import re
 
 def process_chunk(chunk_files,keys,outDir,iteration):
@@ -104,6 +104,8 @@ def PS(outDir):
                 # Create or overwrite the "dat" dataset with the combined data
                 with hpy.File(correction_path, 'w') as finalOut:
                     finalOut.create_dataset("dat", data=ar)
+                os.remove(save_path)
+                
                     
 
     print("Done")
