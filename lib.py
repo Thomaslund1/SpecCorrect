@@ -342,7 +342,7 @@ def abs_ind_vels(data, abs_ind):
     for i in range(len(data)):
         dif = data[i][abs_ind] - data[0][abs_ind]
         div = dif/data[0][abs_ind]
-        vel = div/c
+        vel = div*c
         velocities.append(vel)
     return velocities
 
