@@ -219,7 +219,7 @@ def groupByOrder(orders, data, bins):
     
     return listOfBins
 
-def groupByOrderMeds(orders, data, bins):
+def groupByOrderMeds(orders, data, bins, combine_fnc = np.nanmedian):
     """
     Splits the set of given data into the number of bins asked for according to order and takes the median within each bin per measurment. 
     @param orders : list/array
@@ -245,7 +245,7 @@ def groupByOrderMeds(orders, data, bins):
         for i in range(len(dat)):
             subl = []
             for j in range(len(dat[i])):
-                subl.append(np.nanmedian(dat[i][j])) # same function as groupByOrder, but this line reduces a dimensions with medians
+                subl.append(combine_fnc(dat[i][j])) # same function as groupByOrder, but this line reduces a dimensions with medians
             newLis.append(subl)
         newList = np.array(newLis)
         
