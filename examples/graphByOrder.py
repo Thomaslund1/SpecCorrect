@@ -6,8 +6,8 @@ import h5py as hpy
 import matplotlib.pyplot as plt
 
 #open data files that have been pre-processed
-wavl = hpy.File("/data1/linefits/outputsEtalonNEID/consolidatedData_current/All_centroidWl.hdf5",'r')['dat'][:]
-ords = hpy.File("/data1/linefits/outputsEtalonNEID/consolidatedData_current/All_order.hdf5",'r')['dat'][:]
+wavl = hpy.File("./All_centroidWl.hdf5",'r')['dat'][:]
+ords = hpy.File("./All_order.hdf5",'r')['dat'][:]
 
 #process data into per-order wavelength bins
 ordVel = lib.getVels(wavl,ords,5,0)
