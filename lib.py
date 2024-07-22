@@ -273,7 +273,8 @@ def wl2vel(wls,ref=50):
         out.append((np.subtract(wls[i],reference_row)/reference_row)*299792458)
     return(out)
 
-def getVels(wavelengths,orders,bins,ordVsInd,ref=0,medians=1):
+
+def getVels(wavelengths,orders,bins,ordVsInd,ref=0,medians=1,combineMethod = np.nanmedian):
     """
     repackadged version of both functions to return a binned list of velocities
     @param wavelengths : list/array
@@ -294,15 +295,73 @@ def getVels(wavelengths,orders,bins,ordVsInd,ref=0,medians=1):
     vels = wl2vel(wavelengths)
     if(not ordVsInd):
         if(medians):
-            return groupByOrderMeds(orders,vels,bins)
-        return groupByOrderMeds(orders,vels,bins)
+            return groupByOrderMeds(orders,vels,bins,combineMethod)
+        return groupByOrder(orders,vels,bins)
     else:
-        out = []
-        inds = group_by_numind(bins, wavelengths, ref, 1)[0]
-        for i in range(len(vels)):
-            out.append(filter_vels(vels,inds,i))
-        return (out)
+        if(medians):
+            return get_medians_in_buckets(vels,bins,combineMethod)
+        return (getAllInds(vels,bins))
+
+    
+def getRefInds(data,num,ind):
+    """
+    helper function for binning a single measurment by given value
+    @param data : array
+        the data to binned from hdf5 file
+    @param num : int
+        how many pixels per bin
+    @param ind :
+        which measurment index to calculate
+    """
+    chop = ords[ind][:-(len(data[ind])%num)]
+    return(np.split(chop,len(chop)//num))
+
+def getAllInds(data,num):
+    """
+    bins all measurments in a hdf5 file to an array
+    @param data : array
+        the full 2d array to bin
+    @param num : int
+        how many pixels per bin
+    """
+    out = []
+    for i in range(len(data)):
+        print(f"Processing {int(i+1)}/{(len(data))}", end="\r")
+        out.append(getRefInds(data,num,i))
+    return np.array(out)
+    
+def Fast_get_medians_in_buckets(ords, num, method=np.median):
+    # Ensure each row's length is divisible by num
+    chopped = ords[:, :(ords.shape[1] // num) * num]
+    
+    # Reshape to split each row into num-sized buckets
+    reshaped = chopped.reshape(chopped.shape[0], -1, num)
+    
+    # Calculate medians along the last axis (within each bucket)
+    medians = method(reshaped, axis=2)
+    
+    return medians
+def get_medians_in_buckets(ords, num, agg_func = np.median):
+    
+    aggregated_values = []
+    count = 0
+    for row in ords:
+        count +=1
+        print(f"Processing {int(count+1)}/{(len(ords))}", end="\r")
+        # Ensure each row's length is divisible by num
+        chopped = row[:len(row) // num * num]
         
+        # Split row into num-sized buckets
+        buckets = [chopped[i:i+num] for i in range(0, len(chopped), num)]
+        
+        # Calculate aggregated value within each bucket
+        bucket_aggregates = [agg_func(bucket) for bucket in buckets]
+        
+        aggregated_values.append(bucket_aggregates)
+    
+    return aggregated_values
+
+     
         
 
 def filter_vels(data, indices, ref):
