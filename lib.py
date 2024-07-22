@@ -274,33 +274,6 @@ def wl2vel(wls,ref=50):
     return(out)
 
 
-def getVels(wavelengths,orders,bins,ordVsInd,ref=0,medians=1,combineMethod = np.nanmedian):
-    """
-    repackadged version of both functions to return a binned list of velocities
-    @param wavelengths : list/array
-        the list of wavelengths as pulled from the hdf5 file
-    @param orders : list/array
-        list of orders as pulled from hdf5
-    @param bins : int
-        how many bins per order if using per order, or how many index values if using by index
-    @param ordVsInd : bol
-        0 = bin by order | 1 = bin by index
-    @param ref : int
-        what index to use as reference measurment for veloicities 
-    @param medians : bol
-        0 = return raw data | 1 = return median of each bin per measurment
-    @returns out : list
-        the sliced data in terms of velocities 
-    """
-    vels = wl2vel(wavelengths)
-    if(not ordVsInd):
-        if(medians):
-            return groupByOrderMeds(orders,vels,bins,combineMethod)
-        return groupByOrder(orders,vels,bins)
-    else:
-        if(medians):
-            return get_medians_in_buckets(vels,bins,combineMethod)
-        return (getAllInds(vels,bins))
 
     
 def getRefInds(data,num,ind):
@@ -331,6 +304,10 @@ def getAllInds(data,num):
     return np.array(out)
     
 def Fast_get_medians_in_buckets(ords, num, method=np.median):
+    """
+    can be manually swapped in if you are using numpy functions with axis arguments (i.e. np.median/mean/nanmedian etc.)
+    works significantly faster due to unraveling, c, and dark magic.
+    """
     # Ensure each row's length is divisible by num
     chopped = ords[:, :(ords.shape[1] // num) * num]
     
@@ -405,6 +382,36 @@ def abs_ind_vels(data, abs_ind, ref):
         velocities.append(vel)
     return velocities
 
+
+def getVels(wavelengths,orders,bins,ordVsInd,ref=0,combine=1,combineMethod = np.nanmedian):
+    """
+    repackadged version of both functions to return a binned list of velocities
+    @param wavelengths : list/array
+        the list of wavelengths as pulled from the hdf5 file
+    @param orders : list/array
+        list of orders as pulled from hdf5
+    @param bins : int
+        how many bins per order if using per order, or how many index values if using by index
+    @param ordVsInd : bol
+        0 = bin by order | 1 = bin by index
+    @param ref : int
+        what index to use as reference measurment for veloicities 
+    @param combine : bol
+        0 = return raw data | 1 = return median of each bin per measurment
+    @param combineMethod : function
+        the method by which to combine the lowest level of data (either order bin or index bin)
+    @returns out : list
+        the sliced data in terms of velocities 
+    """
+    vels = wl2vel(wavelengths)
+    if(not ordVsInd):
+        if(medians):
+            return groupByOrderMeds(orders,vels,bins,combineMethod)
+        return groupByOrder(orders,vels,bins)
+    else:
+        if(medians):
+            return get_medians_in_buckets(vels,bins,combineMethod)
+        return (getAllInds(vels,bins))
 
 
 """CSV Function"""
