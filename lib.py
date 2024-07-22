@@ -327,7 +327,7 @@ def filter_vels(data, indices, ref):
 
 
 
-def abs_ind_vels(data, abs_ind):
+def abs_ind_vels(data, abs_ind, ref):
     """
     function used for calculating the velocities of a specific absolute index value calculated from desired index and order 
     @param : array 
@@ -340,9 +340,9 @@ def abs_ind_vels(data, abs_ind):
     c = 299792458
     velocities = [] 
     for i in range(len(data)):
-        dif = data[i][abs_ind] - data[0][abs_ind]
-        div = dif/data[0][abs_ind]
-        vel = div*c
+        dif = np.subtract(data[i][abs_ind], data[ref][abs_ind])
+        div = np.divide(dif, data[ref][abs_ind])
+        vel = np.multiply(div, c)
         velocities.append(vel)
     return velocities
 
