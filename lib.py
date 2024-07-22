@@ -405,11 +405,11 @@ def getVels(wavelengths,orders,bins,ordVsInd,ref=0,combine=1,combineMethod = np.
     """
     vels = wl2vel(wavelengths)
     if(not ordVsInd):
-        if(medians):
+        if(combine):
             return groupByOrderMeds(orders,vels,bins,combineMethod)
         return groupByOrder(orders,vels,bins)
     else:
-        if(medians):
+        if(combine):
             return get_medians_in_buckets(vels,bins,combineMethod)
         return (getAllInds(vels,bins))
 
