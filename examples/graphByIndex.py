@@ -1,6 +1,6 @@
 import lib
-import numpy as np
 import matplotlib.pyplot as plt
+import h5py as hpy
 
 #grab data
 wavl = hpy.File("/data1/linefits/outputsEtalonNEID/consolidatedData_current/All_centroidWl.hdf5",'r')['dat'][:]
