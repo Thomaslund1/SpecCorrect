@@ -69,6 +69,7 @@ def lSPerodogram(periods,time,flux,graph = 0):
         plt.title('Lomb-Scargle Periodogram')
         plt.xlabel('Period')
         plt.ylabel('Power')
+        plt.xscale('log')
         plt.grid(True)
         plt.gca().invert_xaxis()
         plt.show()
