@@ -58,6 +58,21 @@ def convert_time(data_list):
     return time
 
 
+def lSPerodogram(periods,time,flux,graph = 0):
+
+    frequencies = 1 / periods
+    power = lombscargle(time, flux, frequencies)
+
+    if(graph):
+        plt.figure(figsize=(10, 4))
+        plt.plot(periods, power)
+        plt.title('Lomb-Scargle Periodogram')
+        plt.xlabel('Period')
+        plt.ylabel('Power')
+        plt.grid(True)
+        plt.gca().invert_xaxis()
+        plt.show()
+        
 
 def abs2OrdInd(absPos,order,index):
     """
