@@ -36,6 +36,28 @@ def boxcar_median(data, window_size):
     
     return smoothed_data
 
+"""
+It is about time
+"""
+def convert_time(data_list):
+    time2 = [] # creating a list to store all the times in a way that time date can read 
+    
+    for i in data_list: 
+        a_str = '%i' % i
+        a_str = (a_str[:8] + "T" + a_str[8:])
+        time2.append(a_str)
+    
+    time = [] #creating a list that stores the datetime data. Serves as x-axis on plots 
+    
+    format_data = "%Y%m%dT%H%M%S"  # Format string matching the time data structure
+    
+    for i in range(len(time2)):
+        date = datetime.strptime(time2[i], format_data)
+        time.append(date)
+
+    return time
+
+
 
 def abs2OrdInd(absPos,order,index):
     """
