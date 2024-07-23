@@ -2,7 +2,9 @@
 import numpy as np
 import h5py as hpy
 import pandas as pd 
-
+import matplotlib.pyplot as plt
+from datetime import datetime
+import astropy
 
 def interpolate(wls):
     """
