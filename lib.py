@@ -57,6 +57,46 @@ def convert_time(data_list):
 
     return time
 
+def CompatibleDataArraysIND(time_data_small ,time_data_large):
+    """
+    Function intended to be used on HPF data where the science fiber data and calibration fiber do not lineup. 
+    @param time_data_small
+    the array of time data from the hdf5 file. This array is meant to be the data from the fiber source with 
+    less time data. 
+    @param time_data_large
+    the array of data from the hdf5 file. This array is meant to be the data from the fiber source with more 
+    time data.
+    @returns compat_indices 
+    A list of indices where the recorded times of the measurments from each file tend to lineup better. 
+    """
+    #converting the time arrays to datetimes using the convert_time function from above.
+    small_time = convert_time(time_data_small)
+    large_time = convert_time(time_data_large)
+
+    #named minimum_indices because it will keep track of the index values where the difference between the 
+    #recorded cal fiber time and sci fiber time are at a minimum 
+    
+    minimum_indices = [] 
+    for j in range(len(small_time)):
+        magnitudes = [] 
+        subtract = [] 
+        for i in range(len(large_time)):
+            #finding the difference in seconds between time points in the larger array and smaller array
+            diff = large_time[i] - small_time[j]
+            subtract.append(diff.total_seconds())
+        for i in range(len(subtract)):
+            #taking the absolute value of the differences so that the true minimum magnitude can be found
+            absolute = abs(subtract[i])
+            magnitudes.append(absolute)
+
+        #finding the minimum of the magnitudes, where the minimum index is, and putting it in the compat_indices array
+        minimum = np.min(magnitudes)
+        min_ind = magnitudes.index(minimum)
+        minimum_indices.append(min_ind)
+        minimum_indices = compat_indices
+        #progress bar 
+        print(str(j) + '/18891', end = '\r')
+    return compat_indices
 
 def lSPerodogram(periods,time,flux,graph = 0):
 
