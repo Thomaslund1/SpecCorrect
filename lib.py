@@ -78,7 +78,7 @@ def CompatibleDataArraysIND(time_data_small ,time_data_large):
     #named minimum_indices because it will keep track of the index values where the difference between the 
     #recorded cal fiber time and sci fiber time are at a minimum 
     
-    minimum_indices = [] 
+    compat_indices = [] 
     for j in range(len(small_time)):
         magnitudes = [] 
         subtract = [] 
@@ -94,8 +94,7 @@ def CompatibleDataArraysIND(time_data_small ,time_data_large):
         #finding the minimum of the magnitudes, where the minimum index is, and putting it in the compat_indices array
         minimum = np.min(magnitudes)
         min_ind = magnitudes.index(minimum)
-        minimum_indices.append(min_ind)
-        minimum_indices = compat_indices
+        compat_indices.append(min_ind)
         #progress bar 
         print(str(j) + '/18891', end = '\r')
     return compat_indices
