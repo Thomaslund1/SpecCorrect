@@ -98,6 +98,24 @@ def CompatibleDataArraysIND(time_data_small ,time_data_large):
         print(str(j) + '/18891', end = '\r')
     return compat_indices
 
+def CompatibleWavelengths(wavl_data, compat_indices):
+    """
+    Function intended to create 'lined up' values for centroid data across scical fibers that potentially have different amounts of data. 
+    @param wavl_data
+    the function is intended to take data from a larger array than the array the data will be compared to. For example, 
+    for sci-cal differentials, if cal has much more data that is misaligned with sci, cal centroid data should be passed in the 
+    argument for wavl_data.  
+    @param compat_indices
+    the indices generated from the CompatibleArraysIND.  
+    @returns compatible_cen 
+    A list of centroid wavelenghts that should be compatible with the smaller arrays
+    """
+    compatible_cen = [] 
+    #adding the compatible wavelength centroid data as determined by the CompatibleDataArraysIND function
+    for i in compat_indices:
+        compatible_cen.append(wavl_data[i])
+    return compatible_cen
+
 def lSPerodogram(periods,time,flux,graph = 0):
 
     frequencies = 1 / periods
