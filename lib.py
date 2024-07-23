@@ -25,6 +25,17 @@ def interpolate(wls):
             wls[i, j] = np.nanmedian(wls[i][j-10:j+10])
     return wls
 
+def boxcar_median(data, window_size):
+    half_window = window_size // 2
+    smoothed_data = np.zeros(len(data), dtype=np.float64)
+    
+    for i in range(len(data)):
+        start = max(0, i - half_window)
+        end = min(len(data), i + half_window + 1)
+        smoothed_data[i] = np.median(data[start:end])
+    
+    return smoothed_data
+
 
 def abs2OrdInd(absPos,order,index):
     """
