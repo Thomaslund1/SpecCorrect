@@ -436,7 +436,7 @@ def getVels(wavelengths,orders,bins,ordVsInd,ref=0,combine=1,combineMethod = np.
     @returns out : list
         the sliced data in terms of velocities 
     """
-    vels = wl2vel(wavelengths)
+    vels = wl2vel(wavelengths, ref)
     if(not ordVsInd):
         if(combine):
             return groupByOrderMeds(orders,vels,bins,combineMethod)
