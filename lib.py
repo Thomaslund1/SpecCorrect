@@ -517,6 +517,9 @@ def getVels(wavelengths,orders,bins,ordVsInd,ref=0,combine=1,combineMethod = np.
         return groupByOrder(orders,wavelengths,bins)
     else:
         if(combine):
+            if combineMethod.__module__ == np.__name__:
+                print("using fast binning")
+                return np.array(Fast_get_medians_in_buckets(wavelengths,bins,combineMethod)).T
             return np.array(get_medians_in_buckets(wavelengths,bins,combineMethod)).T
         return np.array((getAllInds(wavelengths,bins))).T
 
