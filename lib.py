@@ -1,3 +1,4 @@
+
 """Global Packadges"""
 import numpy as np
 import h5py as hpy
@@ -382,8 +383,6 @@ def wl2vel(wls,ref=50):
         out.append((np.subtract(wls[i],reference_row)/reference_row)*299792458)
     return(out)
 
-
-
     
 def getRefInds(data,num,ind):
     """
@@ -512,15 +511,14 @@ def getVels(wavelengths,orders,bins,ordVsInd,ref=0,combine=1,combineMethod = np.
     @returns out : list
         the sliced data in terms of velocities 
     """
-    vels = wl2vel(wavelengths, ref)
     if(not ordVsInd):
         if(combine):
-            return groupByOrderMeds(orders,vels,bins,combineMethod)
-        return groupByOrder(orders,vels,bins)
+            return groupByOrderMeds(orders,wavelengths,bins,combineMethod)
+        return groupByOrder(orders,wavelengths,bins)
     else:
         if(combine):
-            return get_medians_in_buckets(vels,bins,combineMethod)
-        return (getAllInds(vels,bins))
+            return np.array(get_medians_in_buckets(wavelengths,bins,combineMethod)).T
+        return np.array((getAllInds(wavelengths,bins))).T
 
 
 """CSV Function"""
