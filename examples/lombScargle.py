@@ -27,5 +27,5 @@ for i in range(4):
     plt.grid(True)
     plt.legend()
 
-#make a lomb scargle periodogram of one of ths bins with a logarithmic periods axis from 10**-3 to 10**3
-lib.lSPerodogram(np.logspace(-3,3,1000),times,byOrder[0][2],1)
+#make a lomb scargle periodogram of one of ths bins with a logarithmic periods axis from 10**1 to 10**9 seconds
+lib.lSPerodogram(np.logspace(1,9,1000),times,byOrder[0][2],1)
