@@ -4,6 +4,7 @@ import h5py as hpy
 import pandas as pd 
 import matplotlib.pyplot as plt
 from datetime import datetime
+from scipy.signal import lombscargle
 import astropy
 
 def interpolate(wls):
