@@ -15,3 +15,10 @@ byWave = getVels(waves,ords,50,1)
 ruler = byWave.T[0]
 fig = plt.figure()
 plt.plot(ruler,np.subtract(byWave.T[0],byWave.T[-1]))
+
+
+#same example for order bins
+
+byOrder = lib.getVels(waves,ords,5,0)
+
+ruler = byOrder_np[:, :, 0].flatten()
