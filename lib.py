@@ -281,7 +281,37 @@ def group_by_numwl(num, data_loc, ref):
             list_wavl.append(sublist_wavl)
 
     return list_wavl
+    
 
+def line2Slope(line,time):
+    """
+    function to return the slope of a passed line
+    @param line : list/array
+        the intensity values for each point
+    @param time : list/array
+        the time values for each point
+    @return a : float
+        best linear fit slope for the provided data
+    """
+    a,b = np.polyfit(time,line,1)
+    return(a)
+
+
+def getAllSlopes(lines,times)
+    """
+    function to fit slopes to all given lines
+    @param lines : 2D list/array
+        array of arrays contatining intensity values for each point
+    @param times : 2D list/array
+        array of arrays containing time values for each point
+    @return out: list
+        all of the slope values in the same order as the lines were given
+    """
+    out = []
+    for i in range(len(lines)):
+        out.append(line2Slope(lines[i],times[i]))
+    return out
+    
 
 def group_by_numpix(num, data_loc, ref):
     """
