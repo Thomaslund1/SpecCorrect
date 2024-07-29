@@ -297,19 +297,29 @@ def line2Slope(line,time):
     return(a)
 
 
-def getAllSlopes(lines,times)
+def getAllSlopes(lines, times):
     """
-    function to fit slopes to all given lines
-    @param lines : 2D list/array
-        array of arrays contatining intensity values for each point
-    @param times : 2D list/array
-        array of arrays containing time values for each point
+    Function to fit slopes to all given lines.
+    @param lines : list of 1D arrays
+        Array of arrays containing intensity values for each point.
+    @param times : list of 1D or 2D arrays
+        Array of arrays containing time values for each point.
     @return out: list
-        all of the slope values in the same order as the lines were given
+        All of the slope values in the same order as the lines were given.
     """
     out = []
-    for i in range(len(lines)):
-        out.append(line2Slope(lines[i],times[i]))
+    times = np.array(times, dtype=float)  # Convert to NumPy array and ensure float type
+    if times.ndim == 1:
+        # If `times` is 1D, assume the same time array applies to all lines
+        for i in range(len(lines)):
+            out.append(line2Slope(lines[i], times))
+    elif times.ndim == 2:
+        # If `times` is 2D, ensure the shape matches `lines`
+        for i in range(len(lines)):
+            out.append(line2Slope(lines[i], times[i]))
+    else:
+        raise ValueError("`times` must be either 1D or 2D array.")
+
     return out
     
 
