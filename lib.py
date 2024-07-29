@@ -448,6 +448,10 @@ def wl2vel(wls, ref=50,ruler = None):
         the wavelengths to convert
     @param ref : int (default 50)
         the reference date to convert to velocities from (getting change in wl)
+    @param ruler : list/array
+        optional override to the reference row used to calulate velocities, might be useful for 
+        working with differences or processed wavelength data where you are looking to compare something
+        other than changes since a reference date
     @returns out : list
         the list of velocities
     """
