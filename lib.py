@@ -441,7 +441,7 @@ def groupByOrderMeds(orders, data, bins, combine_fnc=np.nanmedian):
 """Velocity Function"""
 
 
-def wl2vel(wls, ref=50):
+def wl2vel(wls, ref=50,ruler = None):
     """
     converts wavelength values to velocities by a reference date
     @param wls : list/array
@@ -452,6 +452,8 @@ def wl2vel(wls, ref=50):
         the list of velocities
     """
     reference_row = wls[ref].copy()
+    if(ruler):
+        reference_row = ruler
     out = []
     for i in range(len(wls)):
         out.append((np.subtract(wls[i], reference_row) / reference_row) * 299792458)
