@@ -85,6 +85,84 @@ def convert_time(data_list):
     return time
 
 
+#binning signifies if one wants time in seconds, minutes, hours, days, or weeks. seconds = 0, minutes = 1, ... 
+def datetime_conversionify(time_list, binning):
+    datetime_objects_seconds = [] 
+
+    if binning == 0:
+        for i in range(len(time_list)):
+            a_timedelta = time_list[i] - time_list[0]
+            seconds = a_timedelta.total_seconds()
+            datetime_objects_seconds.append(seconds)
+            
+    elif binning == 1:
+        seconds_to_minutes = []
+        for i in range(len(time_list)):
+            a_timedelta = time_list[i] - time_list[0]
+            seconds = a_timedelta.total_seconds()
+            seconds_to_minutes.append(seconds)
+        for i in range(len(seconds_to_minutes)):
+            minute = (seconds_to_minutes[i]/60)
+            datetime_objects_seconds.append(minute)
+
+    elif binning == 2: 
+        seconds_to_minutes = []
+        minutes_to_hours = [] 
+        for i in range(len(time_list)):
+            a_timedelta = time_list[i] - time_list[0]
+            seconds = a_timedelta.total_seconds()
+            seconds_to_minutes.append(seconds)
+        for i in range(len(seconds_to_minutes)):
+            minute = (seconds_to_minutes[i]/60)
+            minutes_to_hours.append(minute)
+        for i in range(len(minutes_to_hours)):
+            hour = (minutes_to_hours[i]/60)
+            datetime_objects_seconds.append(hour)
+
+    elif binning == 3: 
+        seconds_to_minutes = []
+        minutes_to_hours = [] 
+        hours_to_days = [] 
+        for i in range(len(time_list)):
+            a_timedelta = time_list[i] - time_list[0]
+            seconds = a_timedelta.total_seconds()
+            seconds_to_minutes.append(seconds)
+        for i in range(len(seconds_to_minutes)):
+            minute = (seconds_to_minutes[i]/60)
+            minutes_to_hours.append(minute)
+        for i in range(len(minutes_to_hours)):
+            hour = (minutes_to_hours[i]/60)
+            hours_to_days.append(hour)
+        for i in range(len(hours_to_days)):
+            day = (hours_to_days[i]/24)
+            datetime_objects_seconds.append(day)
+
+    elif binning == 4: 
+        seconds_to_minutes = []
+        minutes_to_hours = [] 
+        hours_to_days = [] 
+        days_to_weeks = [] 
+        for i in range(len(time_list)):
+            a_timedelta = time_list[i] - time_list[0]
+            seconds = a_timedelta.total_seconds()
+            seconds_to_minutes.append(seconds)
+        for i in range(len(seconds_to_minutes)):
+            minute = (seconds_to_minutes[i]/60)
+            minutes_to_hours.append(minute)
+        for i in range(len(minutes_to_hours)):
+            hour = (minutes_to_hours[i]/60)
+            hours_to_days.append(hour)
+        for i in range(len(hours_to_days)):
+            day = (hours_to_days[i]/24)
+            days_to_weeks.append(day)
+        for i in range(len(days_to_weeks)):
+            week = (days_to_weeks[i]/7)
+            datetime_objects_seconds.append(week)
+            
+
+    return datetime_objects_seconds
+
+
 def CompatibleDataArraysIND(time_data_small, time_data_large):
     """
     Function intended to be used on HPF data where the science fiber data and calibration fiber do not lineup.
