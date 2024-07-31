@@ -253,6 +253,40 @@ def lSPerodogram(periods, time, flux, graph=0):
         plt.show()
     return power
 
+def adaptive_piecewise_linear_approximation(x, y, tolerance=1500):
+    x = np.asarray(x) 
+    y = np.asarray(y) 
+    n = len(x)
+    approx_x = [x[0]]
+    approx_y = [y[0]]
+    idx_start = 0  # Starting index of the current segment
+
+    i = 1
+
+    while i < n:
+        # Fit a linear model to the current segment
+        slope, intercept = np.polyfit(x[idx_start:i+1], y[idx_start:i+1], 1)
+
+        # Calculate cumulative sum of absolute deviations from the linear fit
+        cumulative_deviation = np.abs(y[idx_start:i+1] - (slope * x[idx_start:i+1] + intercept)).sum()
+
+        # If cumulative deviation exceeds tolerance, end the segment
+        if cumulative_deviation > tolerance:
+            # Add the end of the segment
+            approx_x.append(x[i-1])
+            approx_y.append(y[i-1])
+            
+            # Move to the next segment
+            idx_start = i - 1
+        
+        i += 1
+
+    # Add the last point
+    approx_x.append(x[-1])
+    approx_y.append(y[-1])
+
+    return approx_x, approx_y
+
 
 def abs2OrdInd(absPos, order, index):
     """
