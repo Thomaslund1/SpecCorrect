@@ -6,39 +6,6 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from scipy.signal import lombscargle
 import astropy
-from astropy.io import fits 
-import copy
-
-"""Master File Generator"""
-# note the function input must be an npy file
-def reference_file_maker(file_path,name):
-    """
-    Function used to generate new master files to run linefits data through. 
-    @param file_path : str 
-    The path of the npy file being used to generate a new reference file. 
-    @param name : str 
-    name of the new reference file that will be generated.
-    @return file
-    A new saved npy reference file to use on additional linefits runs. 
-    """
-    #loading in the file that will be used to generate a reference file
-    file = np.load(file_path, allow_pickle = 1)[()]
-    #creating a copy of the file and storing it in the variable fi 
-    fi = copy.deepcopy(file)
-
-    """extracting the data corresponding with the 'centroid_pix' key. This
-    is the only data point used when generating a new reference files."""
- 
-    for i in file.keys():
-        for j in file[i].keys():
-            fi[i][j] = file[i][j]['centroid_pix']
-            
-    np.save(name,fi)
-    return 
-
-
-
-
 
 
 def interpolate(wls):
@@ -233,7 +200,7 @@ def CompatibleDataArraysIND(time_data_small, time_data_large):
         min_ind = magnitudes.index(minimum)
         compat_indices.append(min_ind)
         # progress bar
-        print(str(j) + "/" +str(len(time_data_small)), end="\r")
+        print(str(j) + "/" +str(len(len(time_data_small))), end="\r")
     return compat_indices
 
 
@@ -285,40 +252,6 @@ def lSPerodogram(periods, time, flux, graph=0):
         plt.gca().invert_xaxis()
         plt.show()
     return power
-
-def adaptive_piecewise_linear_approximation(x, y, tolerance=1500):
-    x = np.asarray(x) 
-    y = np.asarray(y) 
-    n = len(x)
-    approx_x = [x[0]]
-    approx_y = [y[0]]
-    idx_start = 0  # Starting index of the current segment
-
-    i = 1
-
-    while i < n:
-        # Fit a linear model to the current segment
-        slope, intercept = np.polyfit(x[idx_start:i+1], y[idx_start:i+1], 1)
-
-        # Calculate cumulative sum of absolute deviations from the linear fit
-        cumulative_deviation = np.abs(y[idx_start:i+1] - (slope * x[idx_start:i+1] + intercept)).sum()
-
-        # If cumulative deviation exceeds tolerance, end the segment
-        if cumulative_deviation > tolerance:
-            # Add the end of the segment
-            approx_x.append(x[i-1])
-            approx_y.append(y[i-1])
-            
-            # Move to the next segment
-            idx_start = i - 1
-        
-        i += 1
-
-    # Add the last point
-    approx_x.append(x[-1])
-    approx_y.append(y[-1])
-
-    return approx_x, approx_y
 
 
 def abs2OrdInd(absPos, order, index):
@@ -504,6 +437,40 @@ def group_by_numpix(num, data_loc, ref):
 
 """order Stuff"""
 
+def adaptive_piecewise_linear_approximation(x, y, tolerance=1500):
+    x = np.asarray(x) 
+    y = np.asarray(y) 
+    n = len(x)
+    approx_x = [x[0]]
+    approx_y = [y[0]]
+    idx_start = 0  # Starting index of the current segment
+
+    i = 1
+
+    while i < n:
+        # Fit a linear model to the current segment
+        slope, intercept = np.polyfit(x[idx_start:i+1], y[idx_start:i+1], 1)
+
+        # Calculate cumulative sum of absolute deviations from the linear fit
+        cumulative_deviation = np.abs(y[idx_start:i+1] - (slope * x[idx_start:i+1] + intercept)).sum()
+
+        # If cumulative deviation exceeds tolerance, end the segment
+        if cumulative_deviation > tolerance:
+            # Add the end of the segment
+            approx_x.append(x[i-1])
+            approx_y.append(y[i-1])
+            
+            # Move to the next segment
+            idx_start = i - 1
+        
+        i += 1
+
+    # Add the last point
+    approx_x.append(x[-1])
+    approx_y.append(y[-1])
+
+    return approx_x, approx_y
+
 
 def getOrder(orders, num, bins, data):
     """
@@ -550,10 +517,10 @@ def groupByOrder(orders, data, bins):
     listOfBins = []
 
     for q in range(
-        abs(int(orders[0][0]) - int(orders[0][-1])) - 1
+        abs(int(orders[0][0]) - int(orders[0][-1])+1)
     ):  # calculates first minus last order number to know how many orders to process
         print(
-            f"Processing order {int(q+1)}/{(abs(int(orders[0][0]) - int(orders[0][-1])) - 1)}",
+            f"Processing order {int(q+1)}/{(abs(int(orders[0][0]) - int(orders[0][-1]))+1)}",
             end="\r",
         )  # prints an estimated progress report based on the above calculation
         order_number = (
@@ -596,12 +563,12 @@ def groupByOrderMeds(orders, data, bins, combine_fnc=np.nanmedian):
     """
     listOfBins = []
 
-    for q in range(abs(int(orders[0][0]) - int(orders[0][-1])) - 1):
+    for q in range(abs(int(orders[0][0]) - int(orders[0][-1]))+1):
         print(
-            f"Processing order {int(q+1)}/{(abs(int(orders[0][0]) - int(orders[0][-1])) - 1)}",
+            f"Processing order {int(q+1)}/{(abs(int(orders[0][0]) - int(orders[0][-1]))+1)}",
             end="\r",
         )
-        order_number = q + orders[0][0] + 1
+        order_number = q + orders[0][0]
 
         dat = getOrder(orders, order_number, bins, data)
         newLis = []
