@@ -7,6 +7,32 @@ from datetime import datetime
 from scipy.signal import lombscargle
 import astropy
 
+"""Reference File Generator"""
+# note the function input must be an npy file
+def reference_file_maker(file_path,name):
+    """
+    Function used to generate new reference files to run linefits data through. 
+    @param file_path : str 
+    The path of the npy file being used to generate a new reference file. 
+    @param name : str 
+    name of the new reference file that will be generated.
+    @return file
+    A new saved npy reference file to use on additional linefits runs. 
+    """
+    #loading in the file that will be used to generate a reference file
+    file = np.load(file_path, allow_pickle = 1)[()]
+    #creating a copy of the file and storing it in the variable fi 
+    fi = copy.deepcopy(file)
+
+    """extracting the data corresponding with the 'centroid_pix' key. This
+    is the only data point used when generating a new reference files."""
+
+    for i in file.keys():
+        for j in file[i].keys():
+            fi[i][j] = file[i][j]['centroid_pix']
+
+    np.save(name,fi)
+    return 
 
 def interpolate(wls):
     """
