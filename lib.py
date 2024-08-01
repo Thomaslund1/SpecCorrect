@@ -6,6 +6,9 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from scipy.signal import lombscargle
 import astropy
+from astropy.io import fits 
+import glob 
+import copy
 
 
 def interpolate(wls):
