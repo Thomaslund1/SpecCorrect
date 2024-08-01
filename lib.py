@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from scipy.signal import lombscargle
 import astropy
+import copy
 
 """Reference File Generator"""
 # note the function input must be an npy file
