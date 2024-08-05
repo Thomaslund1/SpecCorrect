@@ -227,7 +227,7 @@ def CompatibleDataArraysIND(time_data_small, time_data_large):
         min_ind = magnitudes.index(minimum)
         compat_indices.append(min_ind)
         # progress bar
-        print(str(j) + "/" +str(len(len(time_data_small))), end="\r")
+        print(str(j) + "/" +str(len(time_data_small)), end="\r")
     return compat_indices
 
 
