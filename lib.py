@@ -498,6 +498,60 @@ def adaptive_piecewise_linear_approximation(x, y, tolerance=1500):
 
     return approx_x, approx_y
 
+def getSlopes(binnedData,Times,tolerance,doGraph=0):
+    """
+    calculated the slopes of each bin with respect to approximate linear eras of time. Can return slopes or plot them against bin number by era. 
+    @param binnedData : list/array 
+        the data from getVels that should be processed into linear eras
+    @param Times : list/array
+        the time array of timestamps in seconds as ints
+    @param tolerance : int
+        what tolerance is allowable for adaptive eras function
+    @param doGraph : bol
+        whether a graph should be drawn for the slopes
+    """
+    
+    binnedData = np.concatenate(binnedData)
+
+    import copy
+
+    binnedBa = copy.deepcopy(binnedData)
+
+    for i in range(len(binnedData)):
+        binnedData[i] = boxcar_median(binnedBa[i],500)
+        
+    eras = adaptive_piecewise_linear_approximation(Times,binnedData[50],tolerance)
+
+    fig = plt.figure()
+    plt.plot(Times,binnedData[50])
+    for i in eras[0]:
+        plt.axvline(Times[int(i)])
+
+    slopes = []
+    for q in range(len(binnedData)):
+        slopeTargets = []
+        slopeTimes = []
+        for i in range(1,len(eras[0])):
+            slopeTargets.append(binnedData[q][int(eras[0][i-1]):int(eras[0][i])])
+            slopeTimes.append(Times[int(eras[0][i-1]):int(eras[0][i])])
+        soubl = []
+        for i in range(len(slopeTargets)):
+            soubl.append(line2Slope(slopeTargets[i],slopeTimes[i]))
+        slopes.append(soubl)
+        
+    slopes = np.array(slopes).T[:-1]
+
+    if(doGraph):
+        fib = plt.figure()
+        plt.title("slopes of drift per linear era")
+        plt.xlabel("wavelength(bin number)")
+        plt.ylabel("ervs drift m/s^2")
+        plt.grid(1)
+        for i in range(len(slopes)):
+            plt.plot(boxcar_median(slopes[i],10),'.',label=i)
+        plt.legend()
+    return slopes
+
 
 def getOrder(orders, num, bins, data):
     """
