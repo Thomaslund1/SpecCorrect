@@ -881,7 +881,7 @@ def color_gradient(vels, wavl, order, time):
             median_wavl.append(med)
 
     # Making the meshgrid of x and y values so a gradient can be plotted
-    x = daysTime
+    x = time
     y = median_wavl
     X, Y = np.meshgrid(x, y)
     
