@@ -845,6 +845,57 @@ def getVels(
             return np.array(get_medians_in_buckets(wavelengths, bins, combineMethod)).T
         return np.array((getAllInds(wavelengths, bins))).T
 
+def color_gradient(vels, wavl, order, time):
+
+    """
+    Function used for creating color gradient plots of radial velocity drifts.
+    @ param vels : array 
+    Array of velocities that should come from arrays 
+    @ param wavl : array
+    Array of wavelengths that comes from  
+    @ param order : array 
+    array of orders for the desired dataset. Used for 
+    @ param time : array 
+    insert a time array for the selected data. Can be in any form except datetime values 
+    @return Gradient Plots 
+    """
+
+    #list used for storing the target velocities
+    target_vels = [] 
+
+    #for the velocities in vels, taking the boxcar median and appending it to the target_vels list
+    for i in vels:
+        for j in i:
+            target_vels.append(ryanFunctions.boxcar_median(j,50))
+
+    #turning target_vels list into an array 
+    target_vels = np.array(target_vels)
+
+    #binning the wavelengths into desired binsize
+    wavl = ryanFunctions.getVels(wavl, order, 4, 0)
+    median_wavl = [] 
+    
+    for i in range(len(wavl)):
+        for j in range(4):
+            med = np.nanmedian(wavl[i][j])
+            median_wavl.append(med)
+
+    # Making the meshgrid of x and y values so a gradient can be plotted
+    x = daysTime
+    y = median_wavl
+    X, Y = np.meshgrid(x, y)
+    
+    #Creating the contour plot with the color gradient 
+    plt.figure(figsize=(8, 6))
+    contourf_plot = plt.contourf(X, Y, target_vels, levels=20, cmap='viridis', alpha=0.7)
+    
+    #Plots the contour lines and puts it into the contour plot with the gradient 
+    contour_lines = plt.contour(X, Y, target_vels, levels=10, cmap='viridis' , linewidths=1)
+    
+    # Show plot
+    plt.show()
+
+    return 
 
 """CSV Function"""
 
