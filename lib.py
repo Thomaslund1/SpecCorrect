@@ -866,13 +866,13 @@ def color_gradient(vels, wavl, order, time):
     #for the velocities in vels, taking the boxcar median and appending it to the target_vels list
     for i in vels:
         for j in i:
-            target_vels.append(ryanFunctions.boxcar_median(j,50))
+            target_vels.append(boxcar_median(j,50))
 
     #turning target_vels list into an array 
     target_vels = np.array(target_vels)
 
     #binning the wavelengths into desired binsize
-    wavl = ryanFunctions.getVels(wavl, order, 4, 0)
+    wavl = getVels(wavl, order, 4, 0)
     median_wavl = [] 
     
     for i in range(len(wavl)):
