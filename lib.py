@@ -891,7 +891,8 @@ def color_gradient(vels, wavl, order, time):
     
     #Plots the contour lines and puts it into the contour plot with the gradient 
     contour_lines = plt.contour(X, Y, target_vels, levels=10, cmap='viridis' , linewidths=1)
-    
+  
+    plt.colorbar(contourf_plot, label='Velocities (m/s)')
     # Show plot
     plt.show()
 
