@@ -845,7 +845,7 @@ def getVels(
             return np.array(get_medians_in_buckets(wavelengths, bins, combineMethod)).T
         return np.array((getAllInds(wavelengths, bins))).T
 
-def color_gradient(vels, wavl, order, time):
+def color_gradient(vels, wavl, order, time, title, xlabel, ylabel):
 
     """
     Function used for creating color gradient plots of radial velocity drifts.
@@ -894,6 +894,10 @@ def color_gradient(vels, wavl, order, time):
   
     plt.colorbar(contourf_plot, label='Velocities (m/s)')
     # Show plot
+
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
     plt.show()
 
     return 
