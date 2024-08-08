@@ -845,7 +845,7 @@ def getVels(
             return np.array(get_medians_in_buckets(wavelengths, bins, combineMethod)).T
         return np.array((getAllInds(wavelengths, bins))).T
 
-def color_gradient(vels, wavl, order, time, title, xlabel, ylabel):
+def color_gradient(vels, wavl, order, time, title, xlabel, ylabel, window_size):
 
     """
     Function used for creating color gradient plots of radial velocity drifts.
@@ -857,6 +857,14 @@ def color_gradient(vels, wavl, order, time, title, xlabel, ylabel):
     array of orders for the desired dataset. Used for 
     @ param time : array 
     insert a time array for the selected data. Can be in any form except datetime values 
+    @ param title : str 
+    Title of the plot as indicated by the user.
+    @param xlabel : str 
+    Title of the x-axis as indicated by the user.
+    @param ylabel : str 
+    Title of the y-axis as indicated by the user. 
+    @param window_size : int 
+    Size of the window for taking a boxcar median of the data
     @return Gradient Plots 
     """
 
@@ -866,7 +874,7 @@ def color_gradient(vels, wavl, order, time, title, xlabel, ylabel):
     #for the velocities in vels, taking the boxcar median and appending it to the target_vels list
     for i in vels:
         for j in i:
-            target_vels.append(boxcar_median(j,50))
+            target_vels.append(boxcar_median(j,window_size))
 
     #turning target_vels list into an array 
     target_vels = np.array(target_vels)
