@@ -24,3 +24,9 @@ to open an output file:
 >import h5py as hpy
 
 >data = hpy.File("{path}","{r/w/a/x/etc}")['dat'][:]
+
+
+runTest
+------
+A quick test program to aid linefits runs. Checks the input and output directory for matching date strings in file names and can generate a list of discrepencies.
+useful for things like checking the progress of a linefits run, reparing a failed or interrupted run, or setting target lists
