@@ -9,6 +9,9 @@ import matplotlib.pyplot as plt
 wavl = hpy.File("./All_centroidWl.hdf5",'r')['dat'][:]
 ords = hpy.File("./All_order.hdf5",'r')['dat'][:]
 
+#(optional) convert wavelegnths to equivelent velocities from a reference date
+wavl = lib.wl2vel(wavl)
+
 #process data into per-order wavelength bins
 ordVel = lib.getVels(wavl,ords,5,0)
 arr = np.array(ordVel)
