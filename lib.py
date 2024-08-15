@@ -807,7 +807,7 @@ def abs_ind_vels(data, abs_ind, ref):
     return velocities
 
 
-def getVels(
+def binVels(
     wavelengths, orders, bins, ordVsInd, ref=0, combine=1, combineMethod=np.nanmedian
 ):
     """
