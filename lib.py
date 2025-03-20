@@ -807,8 +807,8 @@ def abs_ind_vels(data, abs_ind, ref):
     return velocities
 
 
-def binVels(
-    wavelengths, orders, bins, ordVsInd, ref=0, combine=1, combineMethod=np.nanmedian
+def getVels(
+    wavelengths, orders, bins, ordVsInd, ref=None, combine=1, combineMethod=np.nanmedian
 ):
     """
     repackadged version of both functions to return a binned list of velocities
@@ -821,7 +821,7 @@ def binVels(
     @param ordVsInd : bol
         0 = bin by order | 1 = bin by index
     @param ref : int
-        what index to use as reference measurment for veloicities
+        what index to use as reference measurment for velocities. If absent assumes velocities were inputted. 
     @param combine : bol
         0 = return raw data | 1 = return median of each bin per measurment
     @param combineMethod : function
@@ -829,6 +829,8 @@ def binVels(
     @returns out : list
         the sliced data in terms of velocities
     """
+    if ref:
+        wavelengths = wl2vel(wavelengths,ref)
     if not ordVsInd:
         if combine:
             return groupByOrderMeds(orders, wavelengths, bins, combineMethod)
