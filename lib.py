@@ -1,12 +1,12 @@
 """Global Packadges"""
+from datetime import datetime
+import copy
+
 import numpy as np
 import h5py as hpy
 import pandas as pd
 import matplotlib.pyplot as plt
-from datetime import datetime
 from scipy.signal import lombscargle
-import astropy
-import copy
 
 """Reference File Generator"""
 # note the function input must be an npy file
@@ -22,7 +22,7 @@ def reference_file_maker(file_path,name):
     """
     #loading in the file that will be used to generate a reference file
     file = np.load(file_path, allow_pickle = 1)[()]
-    #creating a copy of the file and storing it in the variable fi 
+    #creating a copy of the file and storing it in the variable fi
     fi = copy.deepcopy(file)
 
     """extracting the data corresponding with the 'centroid_pix' key. This
@@ -33,7 +33,7 @@ def reference_file_maker(file_path,name):
             fi[i][j] = file[i][j]['centroid_pix']
 
     np.save(name,fi)
-    return 
+    return
 
 def interpolate(wls):
     """
@@ -112,16 +112,16 @@ def convert_time(data_list):
     return time
 
 
-#binning signifies if one wants time in seconds, minutes, hours, days, or weeks. seconds = 0, minutes = 1, ... 
+#binning signifies if one wants time in
+#seconds, minutes, hours, days, or weeks. seconds = 0, minutes = 1, ...
 def datetime_conversionify(time_list, binning):
-    datetime_objects_seconds = [] 
+    datetime_objects_seconds = []
 
     if binning == 0:
         for i in range(len(time_list)):
             a_timedelta = time_list[i] - time_list[0]
             seconds = a_timedelta.total_seconds()
             datetime_objects_seconds.append(seconds)
-            
     elif binning == 1:
         seconds_to_minutes = []
         for i in range(len(time_list)):
@@ -134,7 +134,7 @@ def datetime_conversionify(time_list, binning):
 
     elif binning == 2: 
         seconds_to_minutes = []
-        minutes_to_hours = [] 
+        minutes_to_hours = []
         for i in range(len(time_list)):
             a_timedelta = time_list[i] - time_list[0]
             seconds = a_timedelta.total_seconds()
@@ -146,10 +146,10 @@ def datetime_conversionify(time_list, binning):
             hour = (minutes_to_hours[i]/60)
             datetime_objects_seconds.append(hour)
 
-    elif binning == 3: 
+    elif binning == 3:
         seconds_to_minutes = []
-        minutes_to_hours = [] 
-        hours_to_days = [] 
+        minutes_to_hours = []
+        hours_to_days = []
         for i in range(len(time_list)):
             a_timedelta = time_list[i] - time_list[0]
             seconds = a_timedelta.total_seconds()
@@ -164,11 +164,11 @@ def datetime_conversionify(time_list, binning):
             day = (hours_to_days[i]/24)
             datetime_objects_seconds.append(day)
 
-    elif binning == 4: 
+    elif binning == 4:
         seconds_to_minutes = []
-        minutes_to_hours = [] 
-        hours_to_days = [] 
-        days_to_weeks = [] 
+        minutes_to_hours = []
+        hours_to_days = []
+        days_to_weeks = []
         for i in range(len(time_list)):
             a_timedelta = time_list[i] - time_list[0]
             seconds = a_timedelta.total_seconds()
@@ -185,8 +185,6 @@ def datetime_conversionify(time_list, binning):
         for i in range(len(days_to_weeks)):
             week = (days_to_weeks[i]/7)
             datetime_objects_seconds.append(week)
-            
-
     return datetime_objects_seconds
 
 
@@ -334,7 +332,7 @@ def group_by_numind(num, data_loc, ref):
         Returns a list of lists where indices are binned by the specified integer value in the num argument
     """
     # checking if the user passed a filepath into the function or a specific array
-    if type(data_loc) == str:
+    if isinstance(data_loc,str):
         indices = np.array(
             hpy.File(data_loc + "All_index.hdf5", "r")["dat"][:]
         )  # points at specific indices
@@ -442,7 +440,7 @@ def group_by_numpix(num, data_loc, ref):
         Returns a list of lists where wavelengths are binned by the specified integer value in the num argument
     """
     # checking if the user passed a filepath into the function or a specific array
-    if type(data_loc) == str:
+    if isinstance(data_loc,str):
         cenM_pix = np.array(
             hpy.File(data_loc + "All_centroidPix.hdf5", "r")["dat"][:]
         )  # points at specific cenM_pix
@@ -512,8 +510,6 @@ def getSlopes(binnedData,Times,tolerance,doGraph=0):
     """
     
     binnedData = np.concatenate(binnedData)
-
-    import copy
 
     binnedBa = copy.deepcopy(binnedData)
 
@@ -685,7 +681,7 @@ def wl2vel(wls, ref=50,ruler = None):
         optional override to the reference row used to calulate velocities, might be useful for 
         working with differences or processed wavelength data where you are looking to compare something
         other than changes since a reference date
-    @returns out : list
+    @returns out : array
         the list of velocities
     """
     reference_row = wls[ref].copy()
@@ -694,7 +690,7 @@ def wl2vel(wls, ref=50,ruler = None):
     out = []
     for i in range(len(wls)):
         out.append((np.subtract(wls[i], reference_row) / reference_row) * 299792458)
-    return out
+    return np.array(out)
 
 
 def getRefInds(data, num, ind):
@@ -731,7 +727,7 @@ def Fast_get_medians_in_buckets(ords, num, method=np.median):
     can be manually swapped in if you are using numpy functions with axis arguments (i.e. np.median/mean/nanmedian etc.)
     works significantly faster due to unraveling, c, and dark magic.
 
-    same docs as getRedInds
+    same docs as getRefInds
     """
     # Ensure each row's length is divisible by num
     chopped = ords[:, : (ords.shape[1] // num) * num]
@@ -826,7 +822,7 @@ def getVels(
         0 = return raw data | 1 = return median of each bin per measurment
     @param combineMethod : function
         the method by which to combine the lowest level of data (either order bin or index bin)
-    @returns out : list
+    @returns out : array
         the sliced data in terms of velocities
     """
     if ref:
@@ -871,20 +867,19 @@ def color_gradient(vels, wavl, order, time, title, xlabel, ylabel, window_size):
     """
 
     #list used for storing the target velocities
-    target_vels = [] 
+    target_vels = []
 
     #for the velocities in vels, taking the boxcar median and appending it to the target_vels list
     for i in vels:
         for j in i:
             target_vels.append(boxcar_median(j,window_size))
 
-    #turning target_vels list into an array 
+    #turning target_vels list into an array
     target_vels = np.array(target_vels)
 
     #binning the wavelengths into desired binsize
     wavl = getVels(wavl, order, 4, 0)
-    median_wavl = [] 
-    
+    median_wavl = []
     for i in range(len(wavl)):
         for j in range(4):
             med = np.nanmedian(wavl[i][j])
@@ -894,14 +889,11 @@ def color_gradient(vels, wavl, order, time, title, xlabel, ylabel, window_size):
     x = time
     y = median_wavl
     X, Y = np.meshgrid(x, y)
-    
-    #Creating the contour plot with the color gradient 
+    #Creating the contour plot with the color gradient
     plt.figure(figsize=(8, 6))
     contourf_plot = plt.contourf(X, Y, target_vels, levels=20, cmap='viridis', alpha=0.7)
-    
     #Plots the contour lines and puts it into the contour plot with the gradient 
     contour_lines = plt.contour(X, Y, target_vels, levels=10, cmap='viridis' , linewidths=1)
-  
     plt.colorbar(contourf_plot, label='Velocities (m/s)')
     # Show plot
 
@@ -910,7 +902,7 @@ def color_gradient(vels, wavl, order, time, title, xlabel, ylabel, window_size):
     plt.ylabel(ylabel)
     plt.show()
 
-    return 
+    return
 
 """CSV Function"""
 
