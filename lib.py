@@ -549,7 +549,7 @@ def getSlopes(binnedData,Times,tolerance,doGraph=0):
     return slopes
 
 
-def getOrder(orders, num, bins, data):
+def getOrder(orders, num, bins, data, allow_ragged=False):
     """
     Helper funtion to groupByOrder to chunk one order
     @param orders : array/list
@@ -560,8 +560,11 @@ def getOrder(orders, num, bins, data):
         how many bins to chop into
     @param data :
         a data file to split by the index values calculated
+    @ param allow_ragged : bool
+        If true, build up a nested list which may have uneven counts in each bin
+        If false, trim the last bin to ensure each has a uniform count and return np array
     @returns out : np.array
-        a 2d array with an entry for each bin that contains all the data chuncked into it
+        a 2d array or nested list with an entry for each bin that contains all the data chuncked into it
     """
     mask = orders == num
     temp = []
@@ -570,14 +573,31 @@ def getOrder(orders, num, bins, data):
     filtered_data = np.array(temp)
     sizeOfBin = filtered_data.shape[1] // bins  # Size of each full bin
 
-    trimmed_data_length = sizeOfBin * bins  # Length to trim to
-    trimmed_data = filtered_data[:, :trimmed_data_length]
+    if allow_ragged:
+        binStarts = np.round(np.linspace(0,filtered_data.shape[1]-sizeOfBin,bins)).astype(int)
+        out = []
+        # This produces an output indexed as (bin #, epoch, mode #), which is weird but matches what the
+        # calling functions expect
+        for i in range(bins):
+            i0 = binStarts[i]
+            if i == (bins-1):
+                i1 = -1
+            else:
+                i1 = binStarts[i+1]
+            tmp = []
+            for di in range(filtered_data.shape[0]):
+                tmp.append(filtered_data[di][i0:i1])
+            out.append(tmp)
+        return(out)
+    else:
+        trimmed_data_length = sizeOfBin * bins  # Length to trim to
+        trimmed_data = filtered_data[:, :trimmed_data_length]
 
-    out = np.split(trimmed_data, bins, axis=1)
-    return np.array(out)
+        out = np.split(trimmed_data, bins, axis=1)
+        return np.array(out)
 
 
-def groupByOrder(orders, data, bins):
+def groupByOrder(orders, data, bins, allow_ragged=False):
     """
     Splits the set of given data into the number of bins asked for according to order.
     @param orders : list/array
@@ -586,6 +606,9 @@ def groupByOrder(orders, data, bins):
         the data to chunk as pulled from hdf5 file
     @param bins : int
         how many bins you want returned
+    @param allow_ragged : bool
+        If true, build up a nested list which may have uneven counts in each bin
+        If false, trim the last bin to ensure each has a uniform count and return np array
     @returns listOfBins : list
         the split data in the format [(orders),(bins),(measurments by date),(pixel/index)]
         i.e listOfBins[15,2,5,6] returns the 16th order, 3rd bin, 6th measruement, 7th index value of whatever was passed by data.
@@ -604,7 +627,7 @@ def groupByOrder(orders, data, bins):
             q + orders[0][0] + 1
         )  # adjusts for order offsets like NEID Etalon starting at order 26
 
-        dat = getOrder(orders, order_number, bins, data)
+        dat = getOrder(orders, order_number, bins, data, allow_ragged=allow_ragged)
         newLis = []
 
         for i in range(
@@ -624,7 +647,7 @@ def groupByOrder(orders, data, bins):
     return listOfBins
 
 
-def groupByOrderMeds(orders, data, bins, combine_fnc=np.nanmedian):
+def groupByOrderMeds(orders, data, bins, combine_fnc=np.nanmedian, allow_ragged=False):
     """
     Splits the set of given data into the number of bins asked for according to order and takes the median within each bin per measurment.
     @param orders : list/array
@@ -633,6 +656,9 @@ def groupByOrderMeds(orders, data, bins, combine_fnc=np.nanmedian):
         the data to chunk as pulled from hdf5 file
     @param bins : int
         how many bins you want returned
+    @param allow_ragged : bool
+        If true, build up a nested list which may have uneven counts in each bin
+        If false, trim the last bin to ensure each has a uniform count and return np array
     @returns listOfBins : array
         the split data in the format [(orders),(bins),(median value of that bin per measurment)]
         i.e listOfBins[15,2,5] returns the 16th order, 3rd bin, 6th measurment's median value of whatever was passed by data.
@@ -647,7 +673,7 @@ def groupByOrderMeds(orders, data, bins, combine_fnc=np.nanmedian):
         )
         order_number = q + orders[0][0]
 
-        dat = getOrder(orders, order_number, bins, data)
+        dat = getOrder(orders, order_number, bins, data, allow_ragged=allow_ragged)
         newLis = []
 
         for i in range(len(dat)):
@@ -804,7 +830,7 @@ def abs_ind_vels(data, abs_ind, ref):
 
 
 def getVels(
-    wavelengths, orders, bins, ordVsInd, ref=None, combine=1, combineMethod=np.nanmedian
+    wavelengths, orders, bins, ordVsInd, ref=None, combine=1, combineMethod=np.nanmedian, allow_ragged=False
 ):
     """
     repackadged version of both functions to return a binned list of velocities
@@ -822,6 +848,8 @@ def getVels(
         0 = return raw data | 1 = return median of each bin per measurment
     @param combineMethod : function
         the method by which to combine the lowest level of data (either order bin or index bin)
+    @param allow_ragged : bool
+        Allow for uneven counts in each bin when chunking by order
     @returns out : array
         the sliced data in terms of velocities
     """
@@ -829,8 +857,8 @@ def getVels(
         wavelengths = wl2vel(wavelengths,ref)
     if not ordVsInd:
         if combine:
-            return groupByOrderMeds(orders, wavelengths, bins, combineMethod)
-        return groupByOrder(orders, wavelengths, bins)
+            return groupByOrderMeds(orders, wavelengths, bins, combineMethod, allow_ragged=allow_ragged)
+        return groupByOrder(orders, wavelengths, bin, allow_ragged=allow_ragged)
     else:
         if combine:
             if (
