@@ -14,8 +14,6 @@ def process_chunk(chunk_files,keys,outDir,iteration):
     out_wls = {key: [] for key in keys}  # Dictionary to store results for each key
     
     for file_path in chunk_files:
-        # Process each file and collect results for all keys
-        # Example: Assuming process_file returns a dictionary with keys as specified
         file_data = loadData(file_path)
         for key in keys:
             out_wls[key].append(file_data[key])
@@ -54,7 +52,6 @@ def process_files_in_chunks(allFiles,outDir,chunk_size=100):
         print(f"Chunk {chunk_idx + 1} complete")
 
 
-# Example function to simulate processing a file
 def loadData(file_path):
     """
     pulls all data from the given header and returns it as an array
@@ -113,7 +110,6 @@ def PS(outDir):
     
 
 
-# Example usage:
 def main():
     args = [None,None,1]
     inputs = sys.argv[1:]
@@ -130,7 +126,7 @@ def main():
     '''
     MakeDir(args[1])
     '''
-    allFiles = getFiles(args[0])  # Replace with your list of files
+    allFiles = getFiles(args[0]) 
     process_files_in_chunks(allFiles,args[1], chunk_size=100)
     PS(args[1])
 
